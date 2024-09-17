@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 ColorScheme darkColorScheme = ColorScheme.dark(
-  primary: Colors.green,
-  primaryContainer: const Color(0xFF388E3C),
-  secondary: Colors.grey.shade800,
+  primary: Colors.blue[800]!,
+  primaryContainer: Colors.blue[800],
+  secondary: Colors.grey.shade900,
   secondaryContainer: const Color(0xFF2E7D32),
   surface: Colors.grey.shade600,
   onPrimary: const Color(0xFF000000),
