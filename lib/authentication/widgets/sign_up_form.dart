@@ -123,10 +123,12 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           ),
           const SizedBox(height: 20),
           CustomButton(
-              onPressed: () {
-                _signUp(context);
-              },
-              buttonText: _isLoading ? "Signing Up..." : "Register now"),
+            onPressed: () {
+              _signUp(context);
+            },
+            buttonText: "Register now",
+            isLoading: _isLoading,
+          ),
         ],
       ),
     );
