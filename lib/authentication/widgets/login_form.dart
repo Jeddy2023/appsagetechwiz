@@ -99,7 +99,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             onPressed: () {
               _login(context);
             },
-            buttonText: _isLoading ? "Logging In..." : "Login",
+            buttonText: "Login",
+            isLoading: _isLoading,
           ),
         ],
       ),
