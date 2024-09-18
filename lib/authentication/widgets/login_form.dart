@@ -44,7 +44,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
     if (errorMessage == null) {
       // Successful login, navigate to the home screen
-      Navigator.pushNamed(context, '/main');
+      Navigator.pushReplacementNamed(context, '/main');
     } else {
       // Show error message using a SnackBar
       ToasterUtils.showCustomSnackBar(context, errorMessage);
