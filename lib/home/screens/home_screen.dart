@@ -1,5 +1,6 @@
 import 'package:appsagetechwiz/home/widgets/expense_card.dart';
 import 'package:appsagetechwiz/home/widgets/hero_card.dart';
+import 'package:appsagetechwiz/home/widgets/no_trip_card.dart';
 import 'package:appsagetechwiz/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,30 +14,38 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late Future<Map<String, dynamic>?> _userDataFuture;
+  final Map<String, dynamic> _currentTrip = {
+    'tripName': 'Europe Vacation',
+    'budget': 3000.00,
+    'spent': 2000.00
+  };
 
   List<Map<String, dynamic>> expenses = [
-    {"title": "Hotel Booking", "amount": 450.00, "category": "Accommodation"},
-    {"title": "Flight Tickets", "amount": 800.00, "category": "Transportation"},
     {
-      "title": "Dinner at Local Restaurant",
-      "amount": 75.50,
-      "category": "Food"
+      'title': 'Flight tickets',
+      'amount': 500.00,
+      'category': 'Travel',
     },
     {
-      "title": "Museum Entrance Fee",
-      "amount": 20.00,
-      "category": "Entertainment"
+      'title': 'Hotel stay',
+      'amount': 300.00,
+      'category': 'Travel',
     },
-    {"title": "Souvenir Shopping", "amount": 50.00, "category": "Shopping"},
     {
-      "title": "Local Train Tickets",
-      "amount": 30.00,
-      "category": "Transportation"
+      'title': 'Dinner',
+      'amount': 50.00,
+      'category': 'Food',
     },
-    {"title": "Groceries", "amount": 40.00, "category": "Food"},
-    {"title": "City Tour Guide", "amount": 100.00, "category": "Entertainment"},
-    {"title": "Travel Insurance", "amount": 80.00, "category": "Miscellaneous"},
-    {"title": "Taxi Ride", "amount": 25.00, "category": "Transportation"}
+    {
+      'title': 'Groceries',
+      'amount': 100.00,
+      'category': 'Food',
+    },
+    {
+      'title': 'Shopping',
+      'amount': 200.00,
+      'category': 'Shopping',
+    },
   ];
 
   @override
@@ -44,6 +53,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     final authService = ref.read(authServiceProvider);
     _userDataFuture = authService.getCurrentUser();
+
+    // TODO: Fetch current trips and expenses
   }
 
   @override
@@ -112,10 +123,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .headlineSmall
                               ?.copyWith(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
-                      const HeroCard(
-                          tripName: "Europe Vacation",
-                          budget: 5000,
-                          spent: 3500),
+                      _currentTrip.isEmpty
+                          ? const NoTripCard()
+                          : HeroCard(
+                              tripName: _currentTrip['tripName'],
+                              budget: _currentTrip['budget'],
+                              spent: _currentTrip['spent']),
                       const SizedBox(height: 20),
                       Text('Recent Expenses',
                           style: Theme.of(context)
@@ -124,20 +137,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ?.copyWith(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       Expanded(
-                        child: ListView.separated(
-                          itemBuilder: (context, index) {
-                            final expense = expenses[index];
-                            return ExpenseCard(
-                                amount: expense['amount'],
-                                category: expense['category'],
-                                title: expense['title']);
-                          },
-                          separatorBuilder: (context, index) => Divider(
-                            height: 1,
-                            color: Theme.of(context).colorScheme.surface,
-                          ),
-                          itemCount: expenses.length,
-                        ),
+                        child: expenses.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.receipt_long,
+                                      size: 64,
+                                      color: Theme.of(context).disabledColor,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No recent expenses',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.separated(
+                                itemBuilder: (context, index) {
+                                  final expense = expenses[index];
+                                  return ExpenseCard(
+                                      amount: expense['amount'],
+                                      category: expense['category'],
+                                      title: expense['title']);
+                                },
+                                separatorBuilder: (context, index) => Divider(
+                                  height: 1,
+                                  color: Theme.of(context).colorScheme.surface,
+                                ),
+                                itemCount: expenses.length,
+                              ),
                       ),
                     ],
                   ),
