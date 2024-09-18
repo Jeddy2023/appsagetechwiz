@@ -4,14 +4,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 class SocialSignupCard extends StatelessWidget {
   final String iconFilePath;
   final String textContent;
+  final VoidCallback? onTap;
 
-  const SocialSignupCard(
-      {super.key, required this.iconFilePath, required this.textContent});
+  const SocialSignupCard({
+    super.key,
+    required this.iconFilePath,
+    required this.textContent,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
