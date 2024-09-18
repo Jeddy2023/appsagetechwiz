@@ -65,7 +65,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.all(2.0),
             child: Scaffold(
               appBar: AppBar(
-                title: Text("Hi, $firstName"),
+                title: Text(
+                  "Hi, $firstName",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
                 elevation: 0,
                 backgroundColor: Colors.transparent,
                 forceMaterialTransparency: true,
