@@ -4,6 +4,7 @@ import 'package:appsagetechwiz/authentication/screens/sign_up_screen.dart';
 import 'package:appsagetechwiz/home/screens/home_screen.dart';
 import 'package:appsagetechwiz/main_screen.dart';
 import 'package:appsagetechwiz/onboarding/screens/main.dart';
+import 'package:appsagetechwiz/profile/widgets/app_preferences.dart';
 import 'package:appsagetechwiz/profile/widgets/edit_profile.dart';
 import 'package:appsagetechwiz/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ void main() async {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/edit-profile': (context) => const EditProfile(),
+        '/default-settings': (context) => const AppPreferencesScreen(),
         '/main': (context) => const MainScreen(),
         '/account-verification': (context) => const AccountVerification(),
       })));

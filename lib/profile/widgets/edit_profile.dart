@@ -78,7 +78,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
     if (errorMessage == null) {
       // Show success message and/or navigate to another screen if needed
-      ToasterUtils.showCustomSnackBar(context, 'Profile updated successfully');
+      ToasterUtils.showCustomSnackBar(context, 'Profile updated successfully', isError: false);
     } else {
       // Show an error message using ScaffoldMessenger
       ToasterUtils.showCustomSnackBar(context, errorMessage);

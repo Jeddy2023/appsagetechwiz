@@ -52,6 +52,8 @@ class AuthService {
         // Hash the password
         String passwordHash = _hashPassword(password);
 
+        const String defaultPreferredCurrency = 'USD';
+
         // Save user data in Firestore 'Users' collection
         await _firestore.collection('Users').doc(user.uid).set({
           'User_Id': user.uid,
@@ -61,6 +63,8 @@ class AuthService {
           'Last_Name': lastName,
           'Profile_Picture':
               'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png',
+          'Preferred_Currency': defaultPreferredCurrency,
+          'Travel_Preferences': [],
         });
 
         // Update display name
@@ -245,6 +249,82 @@ class AuthService {
       }
     } catch (e) {
       return 'An unexpected error occurred. Please try again.';
+    }
+  }
+
+  // Method to get the user's preferred currency
+  Future<String?> getPreferredCurrency() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return null;
+
+    try {
+      DocumentSnapshot userDoc =
+      await _firestore.collection('Users').doc(currentUser.uid).get();
+      if (userDoc.exists) {
+        return userDoc.get('Preferred_Currency') as String?;
+      }
+      return null;
+    } catch (e) {
+      return null; // Handle error appropriately
+    }
+  }
+
+  // Method to get the user's travel preferences
+  Future<List<String>> getTravelPreferences() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return [];
+
+    try {
+      DocumentSnapshot userDoc =
+      await _firestore.collection('Users').doc(currentUser.uid).get();
+      if (userDoc.exists) {
+        return List<String>.from(userDoc.get('Travel_Preferences') as List);
+      }
+      return [];
+    } catch (e) {
+      return []; // Return empty list if an error occurs
+    }
+  }
+
+  // Method to add a travel preference
+  Future<void> addTravelPreference(String country) async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      await _firestore.collection('Users').doc(currentUser.uid).update({
+        'Travel_Preferences': FieldValue.arrayUnion([country]),
+      });
+    } catch (e) {
+      print('Error adding travel preference: $e');
+    }
+  }
+
+  // Method to delete a travel preference
+  Future<void> deleteTravelPreference(String country) async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      await _firestore.collection('Users').doc(currentUser.uid).update({
+        'Travel_Preferences': FieldValue.arrayRemove([country]),
+      });
+    } catch (e) {
+      print('Error deleting travel preference: $e');
+    }
+  }
+
+  // Method to update preferred currency
+  Future<void> updatePreferredCurrency(String newCurrency) async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      await _firestore.collection('Users').doc(currentUser.uid).update({
+        'Preferred_Currency': newCurrency,
+      });
+    } catch (e) {
+      print('Error updating preferred currency: $e');
     }
   }
 

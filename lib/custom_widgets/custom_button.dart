@@ -4,13 +4,15 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
   final bool isLoading;
+  final Color backgroundColor;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.buttonText,
-    this.isLoading = false, // Default value set to false
-  }) : super(key: key);
+    this.isLoading = false,
+    this.backgroundColor = const Color(0xFF1565C0),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +20,10 @@ class CustomButton extends StatelessWidget {
       width: double.infinity,
       height: 55,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed, // Disable button while loading
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
-          backgroundColor: Colors.blue[800],
+          backgroundColor: backgroundColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
