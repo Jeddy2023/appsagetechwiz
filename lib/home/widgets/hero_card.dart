@@ -23,11 +23,12 @@ class HeroCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [colorScheme.primary, colorScheme.secondary],
-          ),
+          // gradient: LinearGradient(
+          //   begin: Alignment.topLeft,
+          //   end: Alignment.bottomRight,
+          //   colors: [colorScheme.primary, colorScheme.secondary],
+          // ),
+          color: colorScheme.primary,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
