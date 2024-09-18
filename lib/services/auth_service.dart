@@ -213,7 +213,7 @@ class AuthService {
 
       if (user != null) {
         // Update email in Firebase Authentication
-        await user.updateEmail(email);
+        await user.verifyBeforeUpdateEmail(email);
 
         // Update display name (full name)
         String displayName = '$firstName $lastName';
@@ -242,44 +242,6 @@ class AuthService {
           return 'The provided email is invalid.';
         default:
           return 'An error occurred. Please try again.';
-      }
-    } catch (e) {
-      return 'An unexpected error occurred. Please try again.';
-    }
-  }
-
-  // Method to update profile picture separately
-  // Method to update profile picture by uploading a file
-  Future<String?> updateUserProfilePicture({
-    required File imageFile,
-  }) async {
-    try {
-      User? user = _auth.currentUser;
-
-      if (user != null) {
-        // Create a storage reference and upload the file
-        Reference storageRef =
-            _firebaseStorage.ref().child('profile_pictures/${user.uid}.jpg');
-
-        UploadTask uploadTask = storageRef.putFile(imageFile);
-        TaskSnapshot snapshot = await uploadTask;
-
-        // Get the download URL
-        String downloadUrl = await snapshot.ref.getDownloadURL();
-
-        // Update profile picture in Firebase Authentication
-        await user.updatePhotoURL(downloadUrl);
-
-        // Update the profile picture in Firestore
-        await _firestore.collection('Users').doc(user.uid).update({
-          'Profile_Picture': downloadUrl,
-        });
-
-        await user.reload();
-
-        return null;
-      } else {
-        return 'No user is currently logged in.';
       }
     } catch (e) {
       return 'An unexpected error occurred. Please try again.';

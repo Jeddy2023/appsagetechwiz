@@ -21,6 +21,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
   late TextEditingController emailController;
+  final _formKey = GlobalKey<FormState>();
   Map<String, dynamic>? _userData;
   File? _selectedImage;
   bool _isLoading = false;
@@ -50,34 +51,37 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
   /// Method to handle image selection
   Future<void> _handleImageSelection() async {
-    try {
-      final image = await ImageUtils.showOptions(context);
-      if (image != null) {
-        setState(() {
-          _selectedImage = image;
-          _isLoading = true;
-        });
-
-        final authService = ref.read(authServiceProvider);
-        final errorMessage = await authService.updateUserProfilePicture(imageFile: _selectedImage!);
-
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (errorMessage == null) {
-          // Optionally, update local user data or show a success message
-          ToasterUtils.showCustomSnackBar(context, 'Profile picture updated successfully');
-        } else {
-          // Show error message if update failed
-          ToasterUtils.showCustomSnackBar(context, errorMessage);
-        }
-      }
-    } catch (error) {
+    await ImageUtils.showOptions(context, (File image) {
       setState(() {
-        _isLoading = false; // Hide loader on error
+        _selectedImage = image;
       });
-      ToasterUtils.showCustomSnackBar(context, 'An error occurred');
+    });
+  }
+
+  Future<void> _updateProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authService = ref.read(authServiceProvider);
+    final errorMessage = await authService.updateUserInfo(
+      firstName: firstNameController.text.trim(),
+      lastName: lastNameController.text.trim(),
+      email: emailController.text.trim(),
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (errorMessage == null) {
+      // Show success message and/or navigate to another screen if needed
+      ToasterUtils.showCustomSnackBar(context, 'Profile updated successfully');
+    } else {
+      // Show an error message using ScaffoldMessenger
+      ToasterUtils.showCustomSnackBar(context, errorMessage);
     }
   }
 
@@ -98,77 +102,80 @@ class _EditProfileState extends ConsumerState<EditProfile> {
       body: SingleChildScrollView(
         child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                CustomAvatar(
-                  profileImageUrl: _userData?['photoURL'] ??
-                      'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png',
-                  imagePickerHandler: _handleImageSelection,
-                  selectedImageUrl: _selectedImage?.path,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  placeholder: "First name",
-                  label: "First name",
-                  controller: firstNameController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  },
-                  prefixIcon: const Icon(
-                    Icons.person_outline,
-                    color: Colors.grey,
-                    size: 21,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  CustomAvatar(
+                    profileImageUrl: _userData?['photoURL'] ??
+                        'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png',
+                    imagePickerHandler: _handleImageSelection,
+                    selectedImageUrl: _selectedImage?.path,
+                    isLoading: _isLoading,
                   ),
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  placeholder: "Last name",
-                  label: "Last name",
-                  controller: lastNameController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                  prefixIcon: const Icon(
-                    Icons.person_outline,
-                    color: Colors.grey,
-                    size: 21,
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    placeholder: "First name",
+                    label: "First name",
+                    controller: firstNameController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your first name';
+                      }
+                      return null;
+                    },
+                    prefixIcon: const Icon(
+                      Icons.person_outline,
+                      color: Colors.grey,
+                      size: 21,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  placeholder: "Email",
-                  label: "Email",
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                        .hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                  prefixIcon: const Icon(
-                    Icons.alternate_email,
-                    color: Colors.grey,
-                    size: 21,
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    placeholder: "Last name",
+                    label: "Last name",
+                    controller: lastNameController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your last name';
+                      }
+                      return null;
+                    },
+                    prefixIcon: const Icon(
+                      Icons.person_outline,
+                      color: Colors.grey,
+                      size: 21,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                CustomButton(
-                  onPressed: () {},
-                  buttonText: "Save Changes",
-                  isLoading: _isLoading,
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    placeholder: "Email",
+                    label: "Email",
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                          .hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                    prefixIcon: const Icon(
+                      Icons.alternate_email,
+                      color: Colors.grey,
+                      size: 21,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomButton(
+                    onPressed: _updateProfile,
+                    buttonText: "Save Changes",
+                    isLoading: _isLoading,
+                  ),
+                ],
+              ),
             )),
       ),
     );
