@@ -24,49 +24,48 @@ class ImageUtils {
   }
 
   /// Function to show options for selecting image
-  static Future<File?> showOptions(BuildContext context) async {
-    return await showModalBottomSheet<File?>(
-      context: context,
-      builder: (context) {
-        return Container(
-          color: Theme.of(context).colorScheme.secondary,
-          child: SizedBox(
-            height: 150,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.camera),
-                  title: const Text(
-                    'Camera',
-                    style: TextStyle(fontSize: 18),
+  static Future<void> showOptions(BuildContext context, Function(File) onImageSelected) async {
+    await showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            color: Theme.of(context).colorScheme.secondary,
+            child: SizedBox(
+              height: 150,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.camera),
+                    title: const Text(
+                      'Camera',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      File? image = await getImageFromCamera();
+                      if (image != null) {
+                        onImageSelected(image);
+                      }
+                    },
                   ),
-                  onTap: () async {
-                    Navigator.pop(context); // Close the bottom sheet
-                    final image = await getImageFromCamera();
-                    if (image != null) {
-                      Navigator.pop(context, image); // Return the selected image
-                    }
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.image),
-                  title: const Text(
-                    'Gallery',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context); // Close the bottom sheet
-                    final image = await getImageFromGallery();
-                    if (image != null) {
-                      Navigator.pop(context, image); // Return the selected image
-                    }
-                  },
-                ),
-              ],
+                  ListTile(
+                    leading: const Icon(Icons.image),
+                    title: const Text(
+                      'Gallery',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      File? image = await getImageFromGallery();
+                      if (image != null) {
+                        onImageSelected(image);
+                      }
+                    },
+                  )
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 }

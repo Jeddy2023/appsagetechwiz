@@ -88,8 +88,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         {
                           'icon': Icons.person_outline,
                           'title': '${userData['First_Name']} ${userData['Last_Name']}',
-                          'subtitle': 'Profile Info',
+                          'subtitle': 'Personal Profile Info',
                           'route': '/edit-profile',
+                        },
+                        {
+                          'icon': Icons.settings_outlined,
+                          'title': 'Preference Settings',
+                          'route': '/default-settings',
                         },
                       ];
 
