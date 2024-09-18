@@ -25,11 +25,11 @@ ThemeData darkTheme = ThemeData(
   fontFamily: 'Lato',
   textTheme: darkTextTheme,
   colorScheme: darkColorScheme,
-  scaffoldBackgroundColor: Colors.black.withOpacity(0.8),
+  scaffoldBackgroundColor: const Color(0xFF1B1C1E),
   inputDecorationTheme: InputDecorationTheme(
     fillColor: Colors.grey.shade900, // Dark mode fill color
-    focusedBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: Colors.black), // Black when focused
+    focusedBorder: const OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.black), // Black when focused
     ),
   ),
 );
