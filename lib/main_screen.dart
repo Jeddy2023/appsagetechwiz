@@ -1,3 +1,5 @@
+import 'package:appsagetechwiz/home/screens/home_screen.dart';
+import 'package:appsagetechwiz/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -10,7 +12,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [];
+  final List<Widget> _pages = const [
+    HomeScreen(),
+    ProfileScreen()
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
