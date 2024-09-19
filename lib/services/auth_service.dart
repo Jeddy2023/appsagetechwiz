@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:path/path.dart' as path;
 
 class AuthService {
   // Private constructor for Singleton pattern
@@ -255,8 +254,6 @@ class AuthService {
   }
 
   Future<String?> updateProfilePicture(File imageFile) async {
-    print('New file That iCreated now Checking properly: $imageFile');
-
     try {
       User? user = _auth.currentUser;
 
@@ -264,17 +261,38 @@ class AuthService {
         return 'No user is currently logged in.';
       }
 
-      // Generate a unique file name for the image based on the user ID
-      String fileName = path.basename(imageFile.path);
+      // Default profile image URL
+      String defaultPhotoUrl = 'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png';
+
+      // Retrieve the current profile picture URL
+      String? oldPhotoUrl = user.photoURL;
+
+      // Delete the old profile picture from Firebase Storage if it's not the default image
+      if (oldPhotoUrl != null && oldPhotoUrl.isNotEmpty && oldPhotoUrl != defaultPhotoUrl) {
+        try {
+          // Create a reference to the old profile picture
+          Reference oldImageRef = _firebaseStorage.refFromURL(oldPhotoUrl);
+
+          // Delete the old profile picture
+          await oldImageRef.delete();
+          print('Old profile picture deleted successfully.');
+        } catch (e) {
+          print('Error deleting old profile picture: $e');
+          // You can choose whether to continue or return an error here
+        }
+      }
+
+      // Generate a unique file name for the new image based on the user ID
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference storageRef = _firebaseStorage
           .ref()
           .child('profile_pictures/${user.uid}/$fileName');
 
-      // Upload the image to Firebase Storage
+      // Upload the new image to Firebase Storage
       UploadTask uploadTask = storageRef.putFile(imageFile);
       TaskSnapshot taskSnapshot = await uploadTask;
 
-      // Get the download URL of the uploaded image
+      // Get the download URL of the newly uploaded image
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
       // Update the profile picture URL in Firebase Authentication

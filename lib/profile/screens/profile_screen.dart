@@ -13,15 +13,20 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen>{
   late Future<Map<String, dynamic>?> _userDataFuture;
 
   @override
   void initState() {
     super.initState();
-    // Fetch the current user data when the screen initializes
+    _fetchUserData();
+  }
+
+  void _fetchUserData() {
     final authService = ref.read(authServiceProvider);
-    _userDataFuture = authService.getCurrentUser();
+    setState(() {
+      _userDataFuture = authService.getCurrentUser();
+    });
   }
 
   Future<void> _showLogoutConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
