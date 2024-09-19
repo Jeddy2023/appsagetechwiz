@@ -20,7 +20,7 @@ void main() async {
 
   runApp(ProviderScope(
       child: MaterialApp(
-          initialRoute: '/main',
+          initialRoute: '/onboarding',
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.system,
