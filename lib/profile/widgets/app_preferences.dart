@@ -39,8 +39,7 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
         setState(() {
           preferredCurrencyController.text =
               userData['Preferred_Currency'] ?? '';
-          averageBudgetController.text =
-              userData['Average_Budget'] ?? '';
+          averageBudgetController.text = userData['Average_Budget'] ?? '';
           travelPreferences =
               List<String>.from(userData['Travel_Preferences'] ?? []);
         });
@@ -50,7 +49,12 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
 
   // Method to add a new travel preference
   Future<void> _addPreference() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (newPreferenceController.text.trim().isEmpty) {
+      ToasterUtils.showCustomSnackBar(
+          context, 'Please enter a valid preference',
+          isError: true);
+      return;
+    }
 
     Navigator.pop(context);
 
@@ -64,7 +68,8 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
       travelPreferences.last,
     );
 
-    ToasterUtils.showCustomSnackBar(context, 'Preference added successfully', isError: false);
+    ToasterUtils.showCustomSnackBar(context, 'Preference added successfully',
+        isError: false);
   }
 
   // Method to remove a travel preference
@@ -78,7 +83,8 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
       preference,
     );
 
-    ToasterUtils.showCustomSnackBar(context, 'Preference removed successfully', isError: true);
+    ToasterUtils.showCustomSnackBar(context, 'Preference removed successfully',
+        isError: true);
   }
 
   // Method to update the preferred currency
@@ -90,10 +96,8 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
     });
 
     final authService = ref.read(authServiceProvider);
-    await authService.updatePreferences(
-      preferredCurrencyController.text.trim(),
-      averageBudgetController.text.trim()
-    );
+    await authService.updatePreferences(preferredCurrencyController.text.trim(),
+        averageBudgetController.text.trim());
 
     setState(() {
       _isLoading = false;
@@ -160,16 +164,21 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomTextField(
-                      label: "Preferred Currency",
-                      placeholder: "Enter preferred currency",
-                      controller: preferredCurrencyController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your preferred currency';
-                        }
-                        return null;
-                      },
+                    GestureDetector(
+                      onTap: showCurrencyOptions,
+                      child: AbsorbPointer(
+                        child: CustomTextField(
+                          label: "Preferred Currency",
+                          placeholder: "Enter preferred currency",
+                          controller: preferredCurrencyController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your preferred currency';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     CustomTextField(
@@ -184,10 +193,11 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      'Location Preferences',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
+                    if (travelPreferences.isNotEmpty)
+                      Text(
+                        'Location Preferences',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                     const SizedBox(height: 10),
                     ListView.builder(
                       shrinkWrap: true,
@@ -241,8 +251,7 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
             top: 16.0,
           ),
           child: Column(
-            mainAxisSize: MainAxisSize
-                .min,
+            mainAxisSize: MainAxisSize.min,
             children: [
               CustomTextField(
                 label: "Add New Travel Preference",
@@ -259,6 +268,185 @@ class _AppPreferencesScreenState extends ConsumerState<AppPreferencesScreen> {
               const SizedBox(height: 10),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future showCurrencyOptions() async {
+    List<String> getAllCurrencies = [
+      "USD - United States Dollar",
+      "EUR - Euro",
+      "GBP - British Pound",
+      "NGN - Nigerian Naira",
+      "JPY - Japanese Yen",
+      "CAD - Canadian Dollar",
+      "AUD - Australian Dollar",
+      "INR - Indian Rupee",
+      "CNY - Chinese Yuan",
+      "BRL - Brazilian Real",
+      "MXN - Mexican Peso",
+      "RUB - Russian Ruble",
+      "ZAR - South African Rand",
+      "KRW - South Korean Won",
+      "IDR - Indonesian Rupiah",
+      "SGD - Singapore Dollar",
+      "TRY - Turkish Lira",
+      "CHF - Swiss Franc",
+      "SEK - Swedish Krona",
+      "NZD - New Zealand Dollar",
+      "PLN - Polish Zloty",
+      "THB - Thai Baht",
+      "DKK - Danish Krone",
+      "NOK - Norwegian Krone",
+      "HKD - Hong Kong Dollar",
+      "SGD - Singapore Dollar",
+      "MYR - Malaysian Ringgit",
+      "PHP - Philippine Peso",
+      "IDR - Indonesian Rupiah",
+      "VND - Vietnamese Dong",
+      "PKR - Pakistani Rupee",
+      "EGP - Egyptian Pound",
+      "MAD - Moroccan Dirham",
+      "AED - United Arab Emirates Dirham",
+      "ILS - Israeli Shekel",
+      "SAR - Saudi Riyal",
+      "QAR - Qatari Riyal",
+      "KWD - Kuwaiti Dinar",
+      "OMR - Omani Rial",
+      "BHD - Bahraini Dinar",
+      "NZD - New Zealand Dollar",
+      "TWD - New Taiwan Dollar",
+      "CLP - Chilean Peso",
+      "COP - Colombian Peso",
+      "PEN - Peruvian Sol",
+      "DZD - Algerian Dinar",
+      "IQD - Iraqi Dinar",
+      "JOD - Jordanian Dinar",
+      "LBP - Lebanese Pound",
+      "LYD - Libyan Dinar",
+      "TND - Tunisian Dinar",
+      "AFN - Afghan Afghani",
+      "BAM - Bosnian Convertible Mark",
+      "BGN - Bulgarian Lev",
+      "HRK - Croatian Kuna",
+      "CZK - Czech Koruna",
+      "HUF - Hungarian Forint",
+      "ISK - Icelandic Krona",
+      "RON - Romanian Leu",
+      "RSD - Serbian Dinar",
+      "UAH - Ukrainian Hryvnia",
+      "XAF - Central African CFA Franc",
+      "XOF - West African CFA Franc",
+      "KES - Kenyan Shilling",
+      "TZS - Tanzanian Shilling",
+      "UGX - Ugandan Shilling",
+      "GHS - Ghanaian Cedi",
+      "XPF - CFP Franc",
+      "MUR - Mauritian Rupee",
+      "NPR - Nepalese Rupee",
+      "BWP - Botswana Pula",
+      "SZL - Swazi Lilangeni",
+      "LKR - Sri Lankan Rupee",
+      "MVR - Maldivian Rufiyaa",
+      "KZT - Kazakhstani Tenge",
+      "UZS - Uzbekistani Som",
+      "AMD - Armenian Dram",
+      "GEL - Georgian Lari",
+      "BYN - Belarusian Ruble",
+      "MNT - Mongolian Tugrik",
+      "MMK - Myanmar Kyat",
+      "BDT - Bangladeshi Taka",
+      "LAK - Lao Kip",
+      "KHR - Cambodian Riel",
+      "ETB - Ethiopian Birr",
+      "SDG - Sudanese Pound",
+      "SOS - Somali Shilling",
+      "ZMW - Zambian Kwacha",
+      "MWK - Malawian Kwacha",
+      "BND - Brunei Dollar",
+      "KYD - Cayman Islands Dollar",
+      "BZD - Belize Dollar",
+      "TTD - Trinidad and Tobago Dollar",
+      "FJD - Fijian Dollar",
+      "PGK - Papua New Guinean Kina",
+      "SBD - Solomon Islands Dollar",
+      "TOP - Tongan Paʻanga",
+      "VUV - Vanuatu Vatu",
+      "NAD - Namibian Dollar",
+      "BBD - Barbadian Dollar",
+      "BSD - Bahamian Dollar",
+      "JMD - Jamaican Dollar",
+      "HTG - Haitian Gourde",
+      "GYD - Guyanese Dollar",
+    ];
+
+    // A controller for the search field
+    TextEditingController searchController = TextEditingController();
+
+    // This list will hold the filtered currencies
+    List<String> filteredCurrencies = List.from(getAllCurrencies);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Search bar
+                    TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        labelText: 'Search Currency',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          filteredCurrencies = getAllCurrencies
+                              .where((currency) => currency
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
+                              .toList();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: filteredCurrencies.map((String currency) {
+                            return ListTile(
+                              title: Text(currency),
+                              onTap: () {
+                                setState(() {
+                                  // Split the currency string to extract the 3-letter code
+                                  preferredCurrencyController.text =
+                                      currency.split(' ')[0];
+                                });
+                                Navigator.pop(context);
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

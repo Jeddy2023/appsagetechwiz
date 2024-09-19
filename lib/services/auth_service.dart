@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'package:path/path.dart' as path;
 
 class AuthService {
   // Private constructor for Singleton pattern
@@ -250,6 +251,47 @@ class AuthService {
       }
     } catch (e) {
       return 'An unexpected error occurred. Please try again.';
+    }
+  }
+
+  Future<String?> updateProfilePicture(File imageFile) async {
+    print('New file That iCreated now Checking properly: $imageFile');
+
+    try {
+      User? user = _auth.currentUser;
+
+      if (user == null) {
+        return 'No user is currently logged in.';
+      }
+
+      // Generate a unique file name for the image based on the user ID
+      String fileName = path.basename(imageFile.path);
+      Reference storageRef = _firebaseStorage
+          .ref()
+          .child('profile_pictures/${user.uid}/$fileName');
+
+      // Upload the image to Firebase Storage
+      UploadTask uploadTask = storageRef.putFile(imageFile);
+      TaskSnapshot taskSnapshot = await uploadTask;
+
+      // Get the download URL of the uploaded image
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      // Update the profile picture URL in Firebase Authentication
+      await user.updatePhotoURL(downloadUrl);
+
+      // Update the profile picture URL in Firestore
+      await _firestore.collection('Users').doc(user.uid).update({
+        'Profile_Picture': downloadUrl,
+      });
+
+      // Reload the user to apply changes
+      await user.reload();
+      print('Profile picture updated successfully.');
+      return null;
+    } catch (e) {
+      print('Error updating profile picture: $e');
+      return 'An error occurred while updating the profile picture. Please try again.';
     }
   }
 
