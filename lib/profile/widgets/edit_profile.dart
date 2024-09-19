@@ -49,12 +49,42 @@ class _EditProfileState extends ConsumerState<EditProfile> {
     });
   }
 
+  Future<void> _updateProfileImage() async {
+    if (_selectedImage == null) {
+      ToasterUtils.showCustomSnackBar(context, 'Please select an image first');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authService = ref.read(authServiceProvider);
+    final errorMessage = await authService.updateProfilePicture(
+      _selectedImage!
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (errorMessage == null) {
+      // Show success message and/or navigate to another screen if needed
+      ToasterUtils.showCustomSnackBar(context, 'Profile Image updated successfully', isError: false);
+    } else {
+      // Show an error message using ScaffoldMessenger
+      ToasterUtils.showCustomSnackBar(context, errorMessage);
+    }
+  }
+
   /// Method to handle image selection
   Future<void> _handleImageSelection() async {
     await ImageUtils.showOptions(context, (File image) {
       setState(() {
         _selectedImage = image;
       });
+
+      _updateProfileImage();
     });
   }
 
@@ -167,6 +197,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                       color: Colors.grey,
                       size: 21,
                     ),
+                    disabled: true,
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
