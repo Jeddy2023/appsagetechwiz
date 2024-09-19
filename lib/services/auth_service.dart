@@ -136,8 +136,7 @@ class AuthService {
         return 'Google sign-in aborted.';
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -148,7 +147,7 @@ class AuthService {
 
       if (user != null) {
         DocumentSnapshot userDoc =
-            await _firestore.collection('Users').doc(user.uid).get();
+        await _firestore.collection('Users').doc(user.uid).get();
         if (!userDoc.exists) {
           await _firestore.collection('Users').doc(user.uid).set({
             'User_Id': user.uid,
@@ -166,6 +165,7 @@ class AuthService {
 
       return user != null ? null : 'Google sign-in failed. Please try again.';
     } catch (e) {
+      print('Error during Google sign-in: $e');
       return 'An error occurred during Google sign-in. Please try again.';
     }
   }

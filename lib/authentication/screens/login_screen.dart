@@ -1,16 +1,32 @@
 import 'package:appsagetechwiz/authentication/widgets/or_separator.dart';
 import 'package:appsagetechwiz/authentication/widgets/social_signup_card.dart';
+import 'package:appsagetechwiz/utilis/toaster_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:appsagetechwiz/authentication/widgets/login_form.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  // Method to handle Google sign-in
+  Future<void> googleSignInHandler() async {
+    final authService = ref.read(authServiceProvider);
+    String? result = await authService.signInWithGoogle();
+    if (result == null) {
+      ToasterUtils.showCustomSnackBar(context, 'Sign-in successful',
+          isError: false);
+      Navigator.pushNamed(context, '/main');
+    } else {
+      ToasterUtils.showCustomSnackBar(context, result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,9 +77,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 25,
                 ),
-                const SocialSignupCard(
-                    iconFilePath: "assets/images/auth/google.svg",
-                    textContent: "Continue with Google"),
+                SocialSignupCard(
+                  iconFilePath: "assets/images/auth/google.svg",
+                  textContent: "Continue with Google",
+                  onTap: googleSignInHandler,
+                ),
                 const SizedBox(
                   height: 18,
                 ),
