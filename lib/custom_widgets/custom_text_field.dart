@@ -8,6 +8,7 @@ class CustomTextField extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
   final Widget? prefixIcon;
+  final bool disabled;
 
   const CustomTextField({
     super.key,
@@ -18,6 +19,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.prefixIcon,
+    this.disabled = false,
   });
 
   @override
@@ -58,7 +60,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               FocusScope.of(context).unfocus();
             },
             validator: widget.validator,
-            obscureText: widget.isPassword ? _obscureText : false,  // Only obscure text if it's a password field
+            obscureText: widget.isPassword ? _obscureText : false,
+            readOnly: widget.disabled,
             decoration: InputDecoration(
               prefixIcon: widget.prefixIcon,
               suffixIcon: widget.isPassword

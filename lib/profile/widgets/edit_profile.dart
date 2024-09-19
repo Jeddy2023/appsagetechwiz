@@ -167,6 +167,7 @@ class _EditProfileState extends ConsumerState<EditProfile> {
                       color: Colors.grey,
                       size: 21,
                     ),
+                    disabled: true,
                   ),
                   const SizedBox(height: 20),
                   CustomButton(

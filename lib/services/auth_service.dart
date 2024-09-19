@@ -65,6 +65,7 @@ class AuthService {
               'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png',
           'Preferred_Currency': defaultPreferredCurrency,
           'Travel_Preferences': [],
+          'Average_Budget': 0.0
         });
 
         // Update display name
@@ -315,16 +316,17 @@ class AuthService {
   }
 
   // Method to update preferred currency
-  Future<void> updatePreferredCurrency(String newCurrency) async {
+  Future<void> updatePreferences(String newCurrency, String averageBudget) async {
     User? currentUser = _auth.currentUser;
     if (currentUser == null) return;
 
     try {
       await _firestore.collection('Users').doc(currentUser.uid).update({
         'Preferred_Currency': newCurrency,
+        'Average_Budget': averageBudget
       });
     } catch (e) {
-      print('Error updating preferred currency: $e');
+      print('Error updating preferences: $e');
     }
   }
 

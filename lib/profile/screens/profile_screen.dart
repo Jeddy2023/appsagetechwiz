@@ -1,3 +1,5 @@
+import 'package:appsagetechwiz/custom_widgets/custom_button.dart';
+import 'package:appsagetechwiz/custom_widgets/custom_confirmationdialog.dart';
 import 'package:appsagetechwiz/profile/widgets/profile_listtile.dart';
 import 'package:flutter/material.dart';
 import 'package:appsagetechwiz/profile/widgets/profile_info.dart';
@@ -22,8 +24,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _userDataFuture = authService.getCurrentUser();
   }
 
+  Future<void> _showLogoutConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
+    return showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        title: 'Log Out',
+        content: 'Are you sure you want to log out?',
+        onConfirm: onConfirm,
+        onCancel: () {
+          Navigator.of(context).pop(); // Close the dialog if user cancels
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authService = ref.read(authServiceProvider); // Access authService
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -98,25 +116,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                       ];
 
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Center(
-                              child: ProfileInfo(
-                                email: userData['Email'] ?? '',
-                                fullName: '${userData['First_Name']} ${userData['Last_Name']}' ?? '',
-                                profilePicture: userData['photoURL'] ??
-                                    'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png',
-                              ),
+                      return Column(
+                        children: [
+                          Center(
+                            child: ProfileInfo(
+                              email: userData['Email'] ?? '',
+                              fullName: '${userData['First_Name']} ${userData['Last_Name']}' ?? '',
+                              profilePicture: userData['photoURL'] ??
+                                  'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png',
                             ),
-                            ...preferenceItems.map((item) => CustomListTile(
-                              icon: item['icon'],
-                              title: item['title'],
-                              subtitle: item['subtitle'] ?? '',
-                              route: item['route'],
-                            )),
-                          ],
-                        ),
+                          ),
+                          ...preferenceItems.map((item) => CustomListTile(
+                            icon: item['icon'],
+                            title: item['title'],
+                            subtitle: item['subtitle'] ?? '',
+                            route: item['route'],
+                          )),
+                          const SizedBox(height: 20),
+                          CustomButton(
+                            onPressed: () {
+                              _showLogoutConfirmationDialog(context, () async {
+                                await authService.signOut();
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, '/login', (route) => false);
+                              });
+                            },
+                            buttonText: 'Logout',
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        ],
                       );
                     } else {
                       return const Center(
