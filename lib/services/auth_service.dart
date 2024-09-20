@@ -1,11 +1,10 @@
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
 
 class AuthService {
   // Private constructor for Singleton pattern
@@ -259,7 +258,7 @@ class AuthService {
 
     try {
       DocumentSnapshot userDoc =
-      await _firestore.collection('Users').doc(currentUser.uid).get();
+          await _firestore.collection('Users').doc(currentUser.uid).get();
       if (userDoc.exists) {
         return userDoc.get('Preferred_Currency') as String?;
       }
@@ -276,7 +275,7 @@ class AuthService {
 
     try {
       DocumentSnapshot userDoc =
-      await _firestore.collection('Users').doc(currentUser.uid).get();
+          await _firestore.collection('Users').doc(currentUser.uid).get();
       if (userDoc.exists) {
         return List<String>.from(userDoc.get('Travel_Preferences') as List);
       }
@@ -325,6 +324,49 @@ class AuthService {
       });
     } catch (e) {
       print('Error updating preferred currency: $e');
+    }
+  }
+
+  // Method to add a new Trip
+  Future<void> addTrip({
+    required String tripName,
+    required String destination,
+    required DateTime startDate,
+    required DateTime endDate,
+    required double budget,
+  }) async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      await _firestore.collection('Trips').add({
+        'User_Id': currentUser.uid,
+        'Trip_Name': tripName,
+        'Destination': destination,
+        'Start_Date': startDate,
+        'End_Date': endDate,
+        'Budget': budget,
+      });
+    } catch (e) {
+      print('Error adding trip: $e');
+    }
+  }
+
+  // Method to fetch trips
+  Future<List<Object?>> fetchTrips() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return [];
+
+    try {
+      QuerySnapshot trips = await _firestore
+          .collection('Trips')
+          .where('User_Id', isEqualTo: currentUser.uid)
+          .get();
+
+      return trips.docs.map((trip) => trip.data()).toList();
+    } catch (e) {
+      print('Error fetching trips: $e');
+      return [];
     }
   }
 

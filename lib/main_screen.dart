@@ -1,5 +1,6 @@
 import 'package:appsagetechwiz/home/screens/home_screen.dart';
 import 'package:appsagetechwiz/profile/screens/profile_screen.dart';
+import 'package:appsagetechwiz/trips/screens/trips_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = const [
     HomeScreen(),
+    TripsScreen(),
     ProfileScreen()
   ];
 
