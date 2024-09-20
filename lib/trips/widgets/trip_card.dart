@@ -34,7 +34,7 @@ class TripCard extends StatelessWidget {
         }));
       },
       child: Container(
-        height: 100,
+        height: 120,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondary,
