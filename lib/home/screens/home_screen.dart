@@ -113,15 +113,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               body: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Welcome back!',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
                       _currentTrip.isEmpty
                           ? const NoTripCard()
@@ -130,11 +125,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               budget: _currentTrip['budget'],
                               spent: _currentTrip['spent']),
                       const SizedBox(height: 20),
-                      Text('Recent Expenses',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text('Recent Expenses',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold)),
+                      ),
                       const SizedBox(height: 10),
                       Expanded(
                         child: expenses.isEmpty
