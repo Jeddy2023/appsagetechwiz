@@ -56,18 +56,25 @@ class TripDetailPage extends StatelessWidget {
 
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 200.0,
+      expandedHeight: 120.0,
       floating: false,
       pinned: true,
       foregroundColor: Theme.of(context).colorScheme.secondary,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(tripName,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                )),
-        background: Image.network(
-          'https://plus.unsplash.com/premium_photo-1664304598312-6de674eb1b79?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          fit: BoxFit.cover,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+        background: ColorFiltered(
+          colorFilter: ColorFilter.mode(
+            Colors.black.withOpacity(0.5),
+            BlendMode.darken,
+          ),
+          child: Image.asset(
+            'assets/images/general/trip.jpg',
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
