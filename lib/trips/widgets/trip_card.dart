@@ -34,9 +34,10 @@ class TripCard extends StatelessWidget {
         }));
       },
       child: Container(
-        height: 140,
-        padding: const EdgeInsets.all(0),
+        height: 100,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
           border: Border(
             left: BorderSide(
               color: Theme.of(context).colorScheme.primary,
@@ -44,73 +45,46 @@ class TripCard extends StatelessWidget {
             ),
           ),
         ),
-        child: SizedBox(
-          height: 140,
-          child: Card(
-            elevation: 1,
-            color: Theme.of(context).colorScheme.secondary,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              tripName,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Row(
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    tripName,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
+                Expanded(
+                  child: _buildInfoColumn(
+                    context,
+                    'Start',
+                    _formatDate(startDate),
+                    Icons.calendar_today,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
-                    ),
+                Expanded(
+                  child: _buildInfoColumn(
+                    context,
+                    'End',
+                    _formatDate(endDate),
+                    Icons.event,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildInfoColumn(
-                              context,
-                              'Start',
-                              _formatDate(startDate),
-                              Icons.calendar_today,
-                            ),
-                          ),
-                          Expanded(
-                            child: _buildInfoColumn(
-                              context,
-                              'End',
-                              _formatDate(endDate),
-                              Icons.event,
-                            ),
-                          ),
-                          Expanded(
-                            child: _buildInfoColumn(
-                              context,
-                              'Budget',
-                              '\$${budget.toStringAsFixed(2)}',
-                              Icons.account_balance_wallet,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                ),
+                Expanded(
+                  child: _buildInfoColumn(
+                    context,
+                    'Budget',
+                    '\$${budget.toStringAsFixed(2)}',
+                    Icons.account_balance_wallet,
                   ),
-                )
+                ),
               ],
-            ),
-          ),
+            )
+          ],
         ),
       ),
     );
