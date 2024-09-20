@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../screens/trip_detail.dart';
+
 class TripCard extends StatelessWidget {
   final String tripName;
   final String destination;
@@ -18,74 +20,98 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 20),
-      color: Theme.of(context).colorScheme.secondary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            color: Theme.of(context).colorScheme.primary,
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              tripName,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.white),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return TripDetailPage(
+            id: '1',
+            tripName: tripName,
+            destination: destination,
+            startDate: startDate,
+            endDate: endDate,
+            budget: budget,
+          );
+        }));
+      },
+      child: Container(
+        height: 140,
+        padding: const EdgeInsets.all(0),
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 5.0,
             ),
           ),
-          const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
-              ),
-            ),
+        ),
+        child: SizedBox(
+          height: 140,
+          child: Card(
+            elevation: 1,
+            color: Theme.of(context).colorScheme.secondary,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildInfoColumn(
-                        context,
-                        'Start',
-                        _formatDate(startDate),
-                        Icons.calendar_today,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildInfoColumn(
-                        context,
-                        'End',
-                        _formatDate(endDate),
-                        Icons.event,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildInfoColumn(
-                        context,
-                        'Budget',
-                        '\$${budget.toStringAsFixed(2)}',
-                        Icons.account_balance_wallet,
-                      ),
-                    ),
-                  ],
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    tripName,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                  ),
                 ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildInfoColumn(
+                              context,
+                              'Start',
+                              _formatDate(startDate),
+                              Icons.calendar_today,
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildInfoColumn(
+                              context,
+                              'End',
+                              _formatDate(endDate),
+                              Icons.event,
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildInfoColumn(
+                              context,
+                              'Budget',
+                              '\$${budget.toStringAsFixed(2)}',
+                              Icons.account_balance_wallet,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }
