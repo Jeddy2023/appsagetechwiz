@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class NoTripCard extends StatelessWidget {
   const NoTripCard({super.key});
@@ -7,48 +6,40 @@ class NoTripCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: Theme.of(context).colorScheme.primary,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "No Current Trip",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    letterSpacing: 0.5,
                   ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
-              "Plan your next adventure!",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+              "It's time to plan your next adventure and create lasting memories.",
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontSize: 16,
+                    color: Colors.white.withOpacity(0.8),
+                    height: 1.5,
+                  ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Implement navigation to trip planning screen
-              },
-              icon: const Icon(Icons.add),
-              label: const Text(
-                "Plan a New Trip",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-              ),
+            const SizedBox(height: 24),
+            Text(
+              "Start exploring new destinations and unlock endless possibilities.",
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
             ),
           ],
         ),

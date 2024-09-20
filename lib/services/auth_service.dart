@@ -135,7 +135,8 @@ class AuthService {
         return 'Google sign-in aborted.';
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -146,7 +147,7 @@ class AuthService {
 
       if (user != null) {
         DocumentSnapshot userDoc =
-        await _firestore.collection('Users').doc(user.uid).get();
+            await _firestore.collection('Users').doc(user.uid).get();
         if (!userDoc.exists) {
           await _firestore.collection('Users').doc(user.uid).set({
             'User_Id': user.uid,
@@ -262,13 +263,16 @@ class AuthService {
       }
 
       // Default profile image URL
-      String defaultPhotoUrl = 'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png';
+      String defaultPhotoUrl =
+          'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png';
 
       // Retrieve the current profile picture URL
       String? oldPhotoUrl = user.photoURL;
 
       // Delete the old profile picture from Firebase Storage if it's not the default image
-      if (oldPhotoUrl != null && oldPhotoUrl.isNotEmpty && oldPhotoUrl != defaultPhotoUrl) {
+      if (oldPhotoUrl != null &&
+          oldPhotoUrl.isNotEmpty &&
+          oldPhotoUrl != defaultPhotoUrl) {
         try {
           // Create a reference to the old profile picture
           Reference oldImageRef = _firebaseStorage.refFromURL(oldPhotoUrl);
@@ -376,15 +380,14 @@ class AuthService {
   }
 
   // Method to update preferred currency
-  Future<void> updatePreferences(String newCurrency, String averageBudget) async {
+  Future<void> updatePreferences(
+      String newCurrency, String averageBudget) async {
     User? currentUser = _auth.currentUser;
     if (currentUser == null) return;
 
     try {
-      await _firestore.collection('Users').doc(currentUser.uid).update({
-        'Preferred_Currency': newCurrency,
-        'Average_Budget': averageBudget
-      });
+      await _firestore.collection('Users').doc(currentUser.uid).update(
+          {'Preferred_Currency': newCurrency, 'Average_Budget': averageBudget});
     } catch (e) {
       print('Error updating preferences: $e');
     }
@@ -430,6 +433,54 @@ class AuthService {
     } catch (e) {
       print('Error fetching trips: $e');
       return [];
+    }
+  }
+
+  // Method to get a single trip
+  Future<Map<String, dynamic>?> getTrip(String tripId) async {
+    try {
+      DocumentSnapshot tripDoc =
+          await _firestore.collection('Trips').doc(tripId).get();
+      if (tripDoc.exists) {
+        Map<String, dynamic> tripData = tripDoc.data() as Map<String, dynamic>;
+        tripData['Start_Date'] = (tripData['Start_Date'] as Timestamp).toDate();
+        tripData['End_Date'] = (tripData['End_Date'] as Timestamp).toDate();
+        tripData['id'] = tripDoc.id;
+        return tripData;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching trip: $e');
+      return null;
+    }
+  }
+
+  // Method to get the current trip
+  Future<Map<String, dynamic>?> getCurrentTrip() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return null;
+
+    try {
+      QuerySnapshot trips = await _firestore
+          .collection('Trips')
+          .where('User_Id', isEqualTo: currentUser.uid)
+          .where('End_Date', isGreaterThanOrEqualTo: Timestamp.now())
+          .orderBy('End_Date')
+          .limit(1)
+          .get();
+
+      if (trips.docs.isNotEmpty) {
+        Map<String, dynamic> tripData =
+            trips.docs.first.data() as Map<String, dynamic>;
+        tripData['Start_Date'] = (tripData['Start_Date'] as Timestamp).toDate();
+        tripData['End_Date'] = (tripData['End_Date'] as Timestamp).toDate();
+        tripData['id'] = trips.docs.first.id;
+        return tripData;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching current trip: $e');
+      return null;
     }
   }
 
