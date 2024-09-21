@@ -7,7 +7,7 @@ class TripsScreen extends StatefulWidget {
   const TripsScreen({super.key});
 
   @override
-  _TripsScreenState createState() => _TripsScreenState();
+  State<TripsScreen> createState() => _TripsScreenState();
 }
 
 class _TripsScreenState extends State<TripsScreen> {
@@ -53,6 +53,7 @@ class _TripsScreenState extends State<TripsScreen> {
                     itemBuilder: (context, index) {
                       final trip = _trips[index] as Map<String, dynamic>;
                       return TripCard(
+                          tripId: trip['id'],
                           tripName: trip['Trip_Name'],
                           destination: trip['Destination'],
                           startDate: (trip['Start_Date'] as Timestamp).toDate(),
@@ -63,7 +64,7 @@ class _TripsScreenState extends State<TripsScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showAddTripModalBottomSheet(context);
+          Navigator.pushNamed(context, '/add-trip');
         },
         child: const Icon(Icons.add),
       ),
