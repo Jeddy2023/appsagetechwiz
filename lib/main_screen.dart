@@ -1,5 +1,6 @@
 import 'package:appsagetechwiz/home/screens/home_screen.dart';
 import 'package:appsagetechwiz/profile/screens/profile_screen.dart';
+import 'package:appsagetechwiz/reports/screens/report_screen.dart';
 import 'package:appsagetechwiz/trips/screens/trips_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     TripsScreen(),
+    ReportScreen(),
     ProfileScreen()
   ];
 
@@ -56,6 +58,10 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.trip_origin),
               label: 'Trips',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.report),
+              label: 'Reports',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
