@@ -77,7 +77,7 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
             context,
@@ -86,14 +86,12 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
                   LogExpensePage(tripId: widget.id),
             ),
           );
-          // Refresh expenses after adding a new one
           setState(() {
             _expensesFuture = _fetchExpenses();
           });
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add Expense', style: TextStyle(color: Colors.white)),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -158,7 +156,6 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
               widget.destination,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
             ),
             const SizedBox(height: 8),
@@ -200,7 +197,6 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
               'Trip Details',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
             ),
             const SizedBox(height: 16),
@@ -249,7 +245,6 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
           'Expenses',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
               ),
         ),
         const SizedBox(height: 16),

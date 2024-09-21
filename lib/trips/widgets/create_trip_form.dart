@@ -1,3 +1,4 @@
+import 'package:appsagetechwiz/custom_widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:appsagetechwiz/custom_widgets/custom_datefield.dart';
 import 'package:appsagetechwiz/custom_widgets/custom_text_field.dart';
@@ -19,6 +20,7 @@ class _CreateTripFormState extends State<CreateTripForm> {
 
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -88,18 +90,23 @@ class _CreateTripFormState extends State<CreateTripForm> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+              // ElevatedButton(
+              //   style: ElevatedButton.styleFrom(
+              //     foregroundColor: Colors.white,
+              //     backgroundColor: Theme.of(context).colorScheme.primary,
+              //     padding: const EdgeInsets.symmetric(vertical: 16),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //   ),
+              //   onPressed: _submitForm,
+              //   child:
+              //       const Text('Create Trip', style: TextStyle(fontSize: 16)),
+              // ),
+              CustomButton(
                 onPressed: _submitForm,
-                child:
-                    const Text('Create Trip', style: TextStyle(fontSize: 16)),
+                buttonText: 'Create Trip',
+                isLoading: _isLoading,
               ),
               const SizedBox(height: 16),
               TextButton(
@@ -155,6 +162,10 @@ class _CreateTripFormState extends State<CreateTripForm> {
         if (startDate == null || endDate == null) {
           throw const FormatException('Invalid date format');
         }
+
+        setState(() {
+          _isLoading = true;
+        });
 
         await _authService.addTrip(
           tripName: tripNameController.text,
