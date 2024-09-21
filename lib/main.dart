@@ -10,6 +10,8 @@ import 'package:appsagetechwiz/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:appsagetechwiz/splashscreen/splash_screen.dart';
+import 'package:appsagetechwiz/animated-onboarding/animated_onboarding.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -20,11 +22,13 @@ void main() async {
 
   runApp(ProviderScope(
       child: MaterialApp(
-          initialRoute: '/onboarding',
+          initialRoute: '/splashscreen',
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.system,
           routes: {
+        '/splashscreen': (context) => const Splashscreen(),
+        '/onboardings': (context) => const AnimatedOnboardingScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/signup': (context) => const SignUpScreen(),
         '/login': (context) => const LoginScreen(),
