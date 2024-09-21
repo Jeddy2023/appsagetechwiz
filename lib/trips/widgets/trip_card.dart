@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../screens/trip_detail.dart';
 
 class TripCard extends StatelessWidget {
+  final String tripId;
   final String tripName;
   final String destination;
   final DateTime startDate;
@@ -11,6 +12,7 @@ class TripCard extends StatelessWidget {
 
   const TripCard({
     super.key,
+    required this.tripId,
     required this.tripName,
     required this.destination,
     required this.startDate,
@@ -24,7 +26,7 @@ class TripCard extends StatelessWidget {
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return TripDetailPage(
-            id: '1',
+            id: tripId,
             tripName: tripName,
             destination: destination,
             startDate: startDate,
