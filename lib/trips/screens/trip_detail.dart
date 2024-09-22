@@ -1,8 +1,8 @@
-import 'package:appsagetechwiz/trips/screens/log_expense.dart';
-import 'package:appsagetechwiz/providers/auth_provider.dart';
+import 'package:appsagetechwiz/trips/screens/expenses.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:appsagetechwiz/providers/auth_provider.dart';
 
 class TripDetailPage extends ConsumerStatefulWidget {
   final String id;
@@ -65,7 +65,7 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
                         const SizedBox(height: 24),
                         _buildTripDetails(context, expenses),
                         const SizedBox(height: 24),
-                        _buildExpensesList(context, expenses),
+                        _buildExpensesSummary(context, expenses),
                       ],
                     ),
                   ),
@@ -77,22 +77,6 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  LogExpensePage(tripId: widget.id),
-            ),
-          );
-          setState(() {
-            _expensesFuture = _fetchExpenses();
-          });
-        },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
@@ -101,30 +85,83 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
       expandedHeight: 200.0,
       floating: false,
       pinned: true,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.secondary,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           widget.tripName,
           style: TextStyle(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(color: Colors.black.withOpacity(0.3), blurRadius: 2)
-            ],
+            fontSize: 20,
           ),
         ),
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              'assets/images/general/trip.jpg',
-              fit: BoxFit.cover,
-            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              right: -50,
+              top: -50,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            Positioned(
+              left: -30,
+              bottom: -30,
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimary
+                          .withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.destination,
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary
+                            .withOpacity(0.7),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -236,16 +273,39 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
     );
   }
 
-  Widget _buildExpensesList(
+  Widget _buildExpensesSummary(
       BuildContext context, List<Map<String, dynamic>> expenses) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Expenses',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Recent Expenses',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExpensesPage(
+                      tripId: widget.id,
+                      tripName: widget.tripName,
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.secondary,
               ),
+              child: const Text('View All'),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Container(
@@ -264,7 +324,7 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
           child: ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: expenses.length,
+            itemCount: expenses.length > 3 ? 3 : expenses.length,
             separatorBuilder: (context, index) => Divider(
               height: 1,
               color: Theme.of(context).colorScheme.surface,
