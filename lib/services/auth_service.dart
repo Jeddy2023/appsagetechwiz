@@ -405,7 +405,10 @@ class AuthService {
     if (currentUser == null) return;
 
     try {
+      DocumentReference tripRef = _firestore.collection('Trips').doc();
+
       await _firestore.collection('Trips').add({
+        'Trip_Id': tripRef.id,
         'User_Id': currentUser.uid,
         'Trip_Name': tripName,
         'Destination': destination,
