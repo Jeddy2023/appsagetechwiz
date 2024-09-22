@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../screens/trip_detail.dart';
+import 'package:intl/intl.dart';
 
 class TripCard extends StatelessWidget {
   final String tripId;
@@ -22,100 +22,116 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return TripDetailPage(
-            id: tripId,
-            tripName: tripName,
-            destination: destination,
-            startDate: startDate,
-            endDate: endDate,
-            budget: budget,
+    bool hasEnded = endDate.isBefore(DateTime.now());
+    bool isOngoing =
+        startDate.isBefore(DateTime.now()) && endDate.isAfter(DateTime.now());
+
+    return Card(
+      elevation: 0,
+      color: Theme.of(context).colorScheme.secondary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey[300]!, width: 1),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TripDetailPage(
+                id: tripId,
+                tripName: tripName,
+                destination: destination,
+                startDate: startDate,
+                endDate: endDate,
+                budget: budget,
+              ),
+            ),
           );
-        }));
-      },
-      child: Container(
-        height: 120,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          border: Border(
-            left: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-              width: 5.0,
-            ),
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      tripName,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  _buildStatusIndicator(hasEnded, isOngoing),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                destination,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildInfoItem(context, 'Start', _formatDate(startDate)),
+                  _buildInfoItem(context, 'End', _formatDate(endDate)),
+                  _buildInfoItem(context, 'Budget', _formatBudget(budget)),
+                ],
+              ),
+            ],
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              tripName,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoColumn(
-                    context,
-                    'Start',
-                    _formatDate(startDate),
-                    Icons.calendar_today,
-                  ),
-                ),
-                Expanded(
-                  child: _buildInfoColumn(
-                    context,
-                    'End',
-                    _formatDate(endDate),
-                    Icons.event,
-                  ),
-                ),
-                Expanded(
-                  child: _buildInfoColumn(
-                    context,
-                    'Budget',
-                    '\$${budget.toStringAsFixed(2)}',
-                    Icons.account_balance_wallet,
-                  ),
-                ),
-              ],
-            )
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoColumn(
-      BuildContext context, String label, String value, IconData icon) {
+  Widget _buildStatusIndicator(bool hasEnded, bool isOngoing) {
+    Color indicatorColor =
+        hasEnded ? Colors.grey : (isOngoing ? Colors.green : Colors.blue);
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: indicatorColor,
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(BuildContext context, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-            ),
-          ],
+        Text(
+          label,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.grey[600],
+              ),
         ),
-        const SizedBox(height: 4),
-        Text(value, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+        ),
       ],
     );
   }
 
   String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    return DateFormat('MMM d').format(date);
+  }
+
+  String _formatBudget(double budget) {
+    return NumberFormat.compactCurrency(symbol: '\$').format(budget);
   }
 }
