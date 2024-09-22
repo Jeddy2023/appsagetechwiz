@@ -31,12 +31,13 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
           ),
           // For Lottie animation file
           Positioned(
-            top: 220,
+            top: 100,  // Adjusted to stay inside the arc
             right: 0,
             left: 0,
-            child: Lottie.network(
-              onboardintItems[currentIndex].lottieURL,
-              width: 500,
+            child: Lottie.asset(
+              onboardingItems[currentIndex].lottieURL,
+              width: 300,  // Resized to fit inside the arc
+              height: 300,  // Adjust height as needed
               alignment: Alignment.topCenter,
             ),
           ),
@@ -50,11 +51,12 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
                   Flexible(
                     child: PageView.builder(
                       controller: pageController,
-                      itemCount: onboardintItems.length,
+                      itemCount: onboardingItems.length,
                       itemBuilder: (context, index) {
-                        final items = onboardintItems[index];
+                        final items = onboardingItems[index];
                         return Column(
                           children: [
+                            // Title
                             Text(
                               items.title,
                               style: const TextStyle(
@@ -63,13 +65,18 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
                                 color: Colors.black,
                               ),
                             ),
-                            const SizedBox(height: 50),
-                            Text(
-                              items.subtitle,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Colors.black45,
+                            const SizedBox(height: 10),  // Reduced gap between title and subtitle
+                            // Subtitle
+                            Padding(
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 30), // Center subtitle
+                              child: Text(
+                                items.subtitle,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black45,
+                                ),
                               ),
                             ),
                           ],
@@ -86,7 +93,7 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      for (int index = 0; index < onboardintItems.length; index++)
+                      for (int index = 0; index < onboardingItems.length; index++)
                         dotIndicator(isSelected: index == currentIndex),
                     ],
                   ),
@@ -118,7 +125,7 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
                   Container(), // Placeholder for alignment when back button is hidden
                 FloatingActionButton(
                   onPressed: () {
-                    if (currentIndex < onboardintItems.length - 1) {
+                    if (currentIndex < onboardingItems.length - 1) {
                       pageController.nextPage(
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.linear);

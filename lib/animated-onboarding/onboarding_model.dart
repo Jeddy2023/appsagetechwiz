@@ -11,20 +11,20 @@ class OnboardingModel {
 }
 
 // List of items to be displayed in the onboarding screen
-List<OnboardingModel> onboardintItems = [
+List<OnboardingModel> onboardingItems = [
   OnboardingModel(
-    lottieURL: 'https://assets5.lottiefiles.com/packages/lf20_x62chJ.json',
-    title: 'Welcome to the App',
-    subtitle: 'This app helps you achieve great things!',
+    lottieURL: 'assets/Lottie/Yokoso.json',  // Local file for welcome animation
+    title: 'Welcome to Trip Budgeter',
+    subtitle: 'Your one-stop app for budgeting trips, booking, and more!',
   ),
   OnboardingModel(
-    lottieURL: 'https://assets5.lottiefiles.com/packages/lf20_x62chJ.json',
-    title: 'Track Your Progress',
-    subtitle: 'Monitor your goals and reach new heights.',
+    lottieURL: 'assets/Lottie/book_trip.json',  // Local file for book trip animation
+    title: 'Book Trips Easily',
+    subtitle: 'Choose destinations, book, and manage your trips seamlessly.',
   ),
   OnboardingModel(
-    lottieURL: 'https://assets5.lottiefiles.com/packages/lf20_x62chJ.json',
-    title: 'Stay Connected',
-    subtitle: 'Join a community of like-minded people.',
+    lottieURL: 'assets/Lottie/Budget.json',  // Local file for budgeting animation
+    title: 'Budget With Confidence',
+    subtitle: 'Plan your trips effortlessly and stay in control of your budget.',
   ),
 ];
