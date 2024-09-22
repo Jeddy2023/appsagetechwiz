@@ -90,8 +90,8 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           widget.tripName,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
+          style: const TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -154,10 +154,7 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
                     Text(
                       widget.destination,
                       style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onPrimary
-                            .withOpacity(0.7),
+                        color: Colors.white.withOpacity(0.7),
                         fontSize: 16,
                       ),
                     ),
@@ -175,14 +172,7 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.secondary,
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        color: Theme.of(context).colorScheme.secondary,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -216,14 +206,6 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -312,14 +294,6 @@ class _TripDetailPageState extends ConsumerState<TripDetailPage> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
           ),
           child: ListView.separated(
             shrinkWrap: true,
