@@ -405,7 +405,10 @@ class AuthService {
     if (currentUser == null) return;
 
     try {
+      DocumentReference tripRef = _firestore.collection('Trips').doc();
+
       await _firestore.collection('Trips').add({
+        'Trip_Id': tripRef.id,
         'User_Id': currentUser.uid,
         'Trip_Name': tripName,
         'Destination': destination,
@@ -418,8 +421,8 @@ class AuthService {
     }
   }
 
-  // Method to fetch trips
-  Future<List<Object?>> fetchTrips() async {
+// Method to fetch trips
+  Future<List<Map<String, dynamic>>> fetchTrips() async {
     User? currentUser = _auth.currentUser;
     if (currentUser == null) return [];
 
@@ -429,14 +432,20 @@ class AuthService {
           .where('User_Id', isEqualTo: currentUser.uid)
           .get();
 
-      return trips.docs.map((trip) => trip.data()).toList();
+      // Properly map the docs and return a list of maps
+      return trips.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>, // Cast doc.data() to a Map
+        };
+      }).toList(); // Convert the map into a list
     } catch (e) {
       print('Error fetching trips: $e');
       return [];
     }
   }
 
-  // Method to get a single trip
+// Method to get a single trip
   Future<Map<String, dynamic>?> getTrip(String tripId) async {
     try {
       DocumentSnapshot tripDoc =
@@ -455,7 +464,7 @@ class AuthService {
     }
   }
 
-  // Method to get the current trip
+// Method to get the current trip
   Future<Map<String, dynamic>?> getCurrentTrip() async {
     User? currentUser = _auth.currentUser;
     if (currentUser == null) return null;
@@ -481,6 +490,85 @@ class AuthService {
     } catch (e) {
       print('Error fetching current trip: $e');
       return null;
+    }
+  }
+
+// Method to add expense to a specific trip
+  Future<void> addExpense({
+    required String tripId,
+    required String title,
+    required double amount,
+    required String category,
+    required String notes,
+    required DateTime date,
+  }) async {
+    try {
+      await _firestore
+          .collection('Trips')
+          .doc(tripId)
+          .collection('Expenses')
+          .add({
+        'User_Id': _auth.currentUser!.uid,
+        'Trip_Id': tripId,
+        'Title': title,
+        'Amount': amount,
+        'Category': category,
+        'Expense_Date': date,
+        'Notes': notes,
+      });
+    } catch (e) {
+      print('Error adding expense: $e');
+    }
+  }
+
+// Method to fetch expenses for a specific trip
+  Future<List<Map<String, dynamic>>> fetchExpenses(String tripId) async {
+    try {
+      QuerySnapshot expenseSnapshot = await _firestore
+          .collection('Trips')
+          .doc(tripId)
+          .collection('Expenses')
+          .orderBy('Expense_Date')
+          .get();
+
+      return expenseSnapshot.docs
+          .map((expense) => expense.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print('Error fetching expenses: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getLastFiveExpensesForCurrentTrip() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return [];
+
+    try {
+      // First, get the current trip
+      Map<String, dynamic>? currentTrip = await getCurrentTrip();
+      if (currentTrip == null) return [];
+
+      String tripId = currentTrip['id'];
+
+      // Fetch the last five expenses for this trip
+      QuerySnapshot expenseSnapshot = await _firestore
+          .collection('Trips')
+          .doc(tripId)
+          .collection('Expenses')
+          .orderBy('Expense_Date', descending: true)
+          .limit(5)
+          .get();
+
+      return expenseSnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['Expense_Date'] = (data['Expense_Date'] as Timestamp).toDate();
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    } catch (e) {
+      print('Error fetching last five expenses: $e');
+      return [];
     }
   }
 

@@ -54,6 +54,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           const SizedBox(height: 10),
           TextFormField(
             controller: widget.controller,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             cursorColor: Colors.grey.shade800,
             keyboardType: widget.keyboardType,
             onTapOutside: (e) {
@@ -66,19 +67,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
               prefixIcon: widget.prefixIcon,
               suffixIcon: widget.isPassword
                   ? IconButton(
-                onPressed: _toggleObscureText,
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,  // Toggle icons correctly
-                  color: Colors.grey,
-                ),
-              )
-                  : null,  // No visibility toggle for non-password fields
+                      onPressed: _toggleObscureText,
+                      icon: Icon(
+                        _obscureText
+                            ? Icons.visibility_off
+                            : Icons.visibility, // Toggle icons correctly
+                        color: Colors.grey,
+                      ),
+                    )
+                  : null, // No visibility toggle for non-password fields
               fillColor: Theme.of(context).inputDecorationTheme.fillColor,
               filled: true,
               hintText: widget.placeholder,
               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade800,
-              ),
+                    color: Colors.grey.shade800,
+                  ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
                 borderSide: BorderSide.none,
