@@ -1,70 +1,34 @@
 import 'package:appsagetechwiz/reports/screens/report_detailscreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import '../../providers/auth_provider.dart';
 
-class ReportScreen extends StatefulWidget {
+class ReportScreen extends ConsumerStatefulWidget {
   const ReportScreen({super.key});
 
   @override
-  State<ReportScreen> createState() => _ReportScreenState();
+  ConsumerState<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportScreenState extends State<ReportScreen> {
+class _ReportScreenState extends ConsumerState<ReportScreen> {
   final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   bool _isLoading = true;
 
   List<Map<String, dynamic>> reports = [];
 
   Future<void> _fetchReports() async {
-    await Future.delayed(const Duration(seconds: 2));
+    final authService = ref.read(authServiceProvider);
+    setState(() => _isLoading = true);
+
+    List<Map<String, dynamic>> _reports = await authService.fetchAllReports();
 
     setState(() {
-      reports = [
-        {
-          "Trip_Name": "Grand Trip",
-          "Destination": "Grand Canyon",
-          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
-          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726959600 * 1000)),
-          "Budget": 60000.0,
-          "Total_Expenses": 45000.0,
-          "Report_Creation_Date": formatDate(DateTime.now()),
-        },
-        {
-          "Trip_Name": "Easter Cruise",
-          "Destination": "Paris",
-          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
-          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
-          "Budget": 10000.0,
-          "Total_Expenses": 8500.0,
-          "Report_Creation_Date": formatDate(DateTime.now().subtract(const Duration(days: 1))),
-        },
-        {
-          "Trip_Name": "Grand Trip",
-          "Destination": "Grand Canyon",
-          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
-          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726959600 * 1000)),
-          "Budget": 60000.0,
-          "Total_Expenses": 45000.0,
-          "Report_Creation_Date": formatDate(DateTime.now()),
-        },
-        {
-          "Trip_Name": "Easter Cruise",
-          "Destination": "Paris",
-          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
-          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
-          "Budget": 10000.0,
-          "Total_Expenses": 850000.0,
-          "Report_Creation_Date": formatDate(DateTime.now().subtract(const Duration(days: 1))),
-        },
-      ];
+      reports = _reports;
       _isLoading = false;
     });
-  }
-
-  String formatDate(DateTime date) {
-    final DateFormat formatter = DateFormat('MMMM d, y \'at\' hh:mm:ss a \'UTC+1\'');
-    return formatter.format(date.toUtc().add(const Duration(hours: 1)));
   }
 
   @override
@@ -181,7 +145,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                       ?.copyWith(color: Colors.black45),
                                 ),
                                 Text(
-                                  "Created on: ${dateFormat.format(report['Report_Creation_Date'])}",
+                                  "Created on: ${dateFormat.format((report['Report_Creation_Date'] as Timestamp).toDate())}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .labelMedium
@@ -210,7 +174,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      ReportDetailscreen(reportData: report),
+                                      ReportDetailscreen(reportData: report, backAction: _fetchReports,),
                                 ),
                               );
                             },

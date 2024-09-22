@@ -405,16 +405,14 @@ class AuthService {
     if (currentUser == null) return;
 
     try {
-      DocumentReference tripRef = _firestore.collection('Trips').doc();
-
       await _firestore.collection('Trips').add({
-        'Trip_Id': tripRef.id,
         'User_Id': currentUser.uid,
         'Trip_Name': tripName,
         'Destination': destination,
         'Start_Date': startDate,
         'End_Date': endDate,
         'Budget': budget,
+        'Total_Expenses': 0.0
       });
     } catch (e) {
       print('Error adding trip: $e');
@@ -516,6 +514,17 @@ class AuthService {
         'Expense_Date': date,
         'Notes': notes,
       });
+
+      DocumentSnapshot tripDoc =
+          await _firestore.collection('Trips').doc(tripId).get();
+
+      double currentTotalExpenses = tripDoc['Total_Expenses'] ?? 0.0;
+      double updatedTotalExpenses = currentTotalExpenses + amount;
+
+      await _firestore.collection('Trips').doc(tripId).update({
+        'Total_Expenses': updatedTotalExpenses,
+      });
+
     } catch (e) {
       print('Error adding expense: $e');
     }
@@ -568,6 +577,56 @@ class AuthService {
       }).toList();
     } catch (e) {
       print('Error fetching last five expenses: $e');
+      return [];
+    }
+  }
+
+  // Method to generate a report for a specific trip
+  Future<String?> generateReport(String tripId) async {
+    try {
+      print('The trip id we are monitoring $tripId');
+      DocumentSnapshot tripDoc =
+          await _firestore.collection('Trips').doc(tripId).get();
+
+      print('${tripDoc.data()}');
+
+      Map<String, dynamic> tripData = tripDoc.data() as Map<String, dynamic>;
+
+      // Create the report data
+      Map<String, dynamic> reportData = {
+        'Trip_Name': tripData['Trip_Name'],
+        'Destination': tripData['Destination'],
+        'Start_Date': tripData['Start_Date'],
+        'End_Date': tripData['End_Date'],
+        'Budget': tripData['Budget'],
+        'Total_Expenses': tripData['Total_Expenses'],
+        'Report_Creation_Date': Timestamp.now(),
+      };
+
+      // Save the report to the Reports collection
+      await _firestore.collection('Reports').add(reportData);
+      return 'Report generated successfully.';
+    } catch (e) {
+      print('Error generating report');
+      return 'Error generating report: $e';
+    }
+  }
+
+  // Method to fetch all reports
+  Future<List<Map<String, dynamic>>> fetchAllReports() async {
+    try {
+      QuerySnapshot reportsSnapshot =
+          await _firestore.collection('Reports').get();
+
+      // Map the documents to a list of maps
+      return reportsSnapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data() as Map<String, dynamic>,
+        };
+      }).toList(); // Convert the map into a list
+    } catch (e) {
+      print('Error fetching reports: $e');
       return [];
     }
   }

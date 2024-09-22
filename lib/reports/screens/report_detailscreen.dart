@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +11,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ReportDetailscreen extends StatelessWidget {
   final Map<String, dynamic> reportData;
+  VoidCallback backAction;
 
-  const ReportDetailscreen({super.key, required this.reportData});
+  ReportDetailscreen({super.key, required this.reportData, required this.backAction});
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,13 @@ class ReportDetailscreen extends StatelessWidget {
             ),
           ),
         ],
+        leading: IconButton(
+          onPressed: () {
+            backAction();
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -138,7 +147,7 @@ class ReportDetailscreen extends StatelessWidget {
                         LineChartBarData(
                           spots: [
                             FlSpot(0, reportData['Budget']),
-                            FlSpot(1, reportData['Total_Expenses']),
+                            FlSpot(1, reportData['Total_Expenses'] ?? 0),
                           ],
                           isCurved: true,
                           color: Colors.blue,

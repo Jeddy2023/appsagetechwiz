@@ -2,21 +2,26 @@ import 'package:appsagetechwiz/custom_widgets/custom_button.dart';
 import 'package:appsagetechwiz/custom_widgets/custom_text_field.dart';
 import 'package:appsagetechwiz/reports/screens/report_detailscreen.dart';
 import 'package:appsagetechwiz/services/auth_service.dart';
+import 'package:appsagetechwiz/utilis/toaster_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
 
-class GenerateReportScreen extends StatefulWidget {
+class GenerateReportScreen extends ConsumerStatefulWidget {
   const GenerateReportScreen({super.key});
 
   @override
-  State<GenerateReportScreen> createState() => _GenerateReportScreenState();
+  ConsumerState<GenerateReportScreen> createState() => _GenerateReportScreenState();
 }
 
-class _GenerateReportScreenState extends State<GenerateReportScreen> {
+class _GenerateReportScreenState extends ConsumerState<GenerateReportScreen> {
   late TextEditingController tripController;
   final AuthService _authService = AuthService();
   String? selectedTrip;
+  String? selectedTripId;
   List<Map<String, dynamic>> trips = [];
   bool _isLoading = true;
+  List<Map<String, dynamic>> reports = [];
 
   @override
   void initState() {
@@ -25,9 +30,22 @@ class _GenerateReportScreenState extends State<GenerateReportScreen> {
     _fetchTrips();
   }
 
+  Future<void> _fetchReports() async {
+    final authService = ref.read(authServiceProvider);
+    setState(() => _isLoading = true);
+
+    List<Map<String, dynamic>> _reports = await authService.fetchAllReports();
+
+    setState(() {
+      reports = _reports;
+      _isLoading = false;
+    });
+  }
+
   Future<void> _fetchTrips() async {
     setState(() => _isLoading = true);
     final fetchedTrips = await _authService.fetchTrips();
+    print('$fetchedTrips');
     setState(() {
       trips = fetchedTrips.cast<Map<String, dynamic>>();
       _isLoading = false;
@@ -93,19 +111,40 @@ class _GenerateReportScreenState extends State<GenerateReportScreen> {
                       ),
                       const SizedBox(height: 20),
                       CustomButton(
-                        onPressed: () {
-                          if(selectedTrip != null) {
+                        onPressed: () async {
+                          if (selectedTrip != null) {
+                            // Navigate to the ReportDetailscreen
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ReportDetailscreen(
                                   reportData: selectedTripDetails!,
+                                  backAction: _fetchReports,
                                 ),
                               ),
                             );
+
+                            // Show a loading toast or overlay
+                            ToasterUtils.showCustomSnackBar(context, 'Generating report...', isError: false);
+
+                            try {
+                              // Attempt to generate the report
+                              String? result = await _authService.generateReport(selectedTripId!);
+
+                              // Check for success or error
+                              if (result == null) {
+                                ToasterUtils.showCustomSnackBar(context, 'Report generated successfully', isError: false);
+                              } else {
+                                ToasterUtils.showCustomSnackBar(context, result, isError: false);
+                              }
+                            } catch (e) {
+                              // Handle any unexpected errors
+                              ToasterUtils.showCustomSnackBar(context, 'Failed to generate report: $e', isError: true);
+                            }
+                          } else {
+                            ToasterUtils.showCustomSnackBar(context, 'Please select a trip', isError: true);
                           }
-                          return;
-                        }, // Disable the button when no trip is selected
+                        },
                         buttonText: "Generate Report",
                         isLoading: _isLoading,
                       ),
@@ -142,6 +181,7 @@ class _GenerateReportScreenState extends State<GenerateReportScreen> {
                           onTap: () {
                             setState(() {
                               selectedTrip = trip['Trip_Name'] ?? 'Unnamed Trip';
+                              selectedTripId = trip['Trip_Id'] ?? trip['id'];
                               selectedTripDetails = trip;
                               tripController.text = selectedTrip!;
                             });
