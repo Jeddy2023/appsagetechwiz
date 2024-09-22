@@ -6,6 +6,7 @@ import 'package:appsagetechwiz/main_screen.dart';
 import 'package:appsagetechwiz/onboarding/screens/main.dart';
 import 'package:appsagetechwiz/profile/widgets/app_preferences.dart';
 import 'package:appsagetechwiz/profile/widgets/edit_profile.dart';
+import 'package:appsagetechwiz/reports/widgets/generatereport_screen.dart';
 import 'package:appsagetechwiz/theme/theme_constants.dart';
 import 'package:appsagetechwiz/trips/widgets/create_trip_form.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,7 +23,7 @@ void main() async {
 
   runApp(ProviderScope(
       child: MaterialApp(
-          initialRoute: '/onboarding',
+          initialRoute: '/main',
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.system,
@@ -36,5 +37,6 @@ void main() async {
         '/main': (context) => const MainScreen(),
         '/add-trip': (context) => const CreateTripForm(),
         '/account-verification': (context) => const AccountVerification(),
+        '/generate-report': (context) => const GenerateReportScreen(),
       })));
 }
