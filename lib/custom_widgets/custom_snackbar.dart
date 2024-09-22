@@ -18,11 +18,6 @@ class _SnackBarWidgetState extends State<SnackBarWidget> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-    });
   }
 
   @override
@@ -60,7 +55,6 @@ class _SnackBarWidgetState extends State<SnackBarWidget> {
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.white),
                 onPressed: () {
-                  Navigator.of(context).pop();
                 },
               ),
             ],

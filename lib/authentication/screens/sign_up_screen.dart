@@ -27,7 +27,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (result == null) {
       ToasterUtils.showCustomSnackBar(context, 'Sign-in successful',
           isError: false);
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushNamed(context, '/main');
     } else {
       ToasterUtils.showCustomSnackBar(context, result);
     }

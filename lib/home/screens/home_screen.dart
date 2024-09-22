@@ -13,63 +13,41 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late Future<Map<String, dynamic>?> _userDataFuture;
-  final Map<String, dynamic> _currentTrip = {
-    'tripName': 'Europe Vacation',
-    'budget': 3000.00,
-    'spent': 2000.00
-  };
-
-  List<Map<String, dynamic>> expenses = [
-    {
-      'title': 'Flight tickets',
-      'amount': 500.00,
-      'category': 'Travel',
-    },
-    {
-      'title': 'Hotel stay',
-      'amount': 300.00,
-      'category': 'Travel',
-    },
-    {
-      'title': 'Dinner',
-      'amount': 50.00,
-      'category': 'Food',
-    },
-    {
-      'title': 'Groceries',
-      'amount': 100.00,
-      'category': 'Food',
-    },
-    {
-      'title': 'Shopping',
-      'amount': 200.00,
-      'category': 'Shopping',
-    },
-  ];
+  late Future<List<dynamic>> _combinedFuture;
 
   @override
   void initState() {
     super.initState();
     final authService = ref.read(authServiceProvider);
-    _userDataFuture = authService.getCurrentUser();
 
-    // TODO: Fetch current trips and expenses
+    // Fetch user details, current trip, and last five expenses
+    _combinedFuture = Future.wait([
+      authService.getCurrentUser(),
+      authService.getCurrentTrip(),
+      authService.getLastFiveExpensesForCurrentTrip(),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: _userDataFuture,
+    return FutureBuilder<List<dynamic>>(
+      future: _combinedFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData && snapshot.data != null) {
-          final userData = snapshot.data!;
+        } else if (snapshot.hasData) {
+          final userData = snapshot.data![0] as Map<String, dynamic>?;
+          final tripData = snapshot.data![1] as Map<String, dynamic>?;
+          final expensesData = snapshot.data![2] as List<Map<String, dynamic>>;
+
+          if (userData == null) {
+            return const Center(child: Text('No user data available'));
+          }
+
           final firstName = userData['First_Name'] ?? 'User';
-          final profilePicture = userData['photoURL'] ??
+          final profilePicture = userData['Profile_Picture'] ??
               'https://res.cloudinary.com/dn7xnr4ll/image/upload/v1722866767/notionistsNeutral-1722866616198_iu61hw.png';
 
           return Padding(
@@ -113,31 +91,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               body: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Welcome back!',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
-                      _currentTrip.isEmpty
-                          ? const NoTripCard()
-                          : HeroCard(
-                              tripName: _currentTrip['tripName'],
-                              budget: _currentTrip['budget'],
-                              spent: _currentTrip['spent']),
+                      if (tripData != null)
+                        HeroCard(
+                          tripName: tripData['Trip_Name'],
+                          budget: tripData['Budget']?.toDouble() ?? 0.0,
+                          spent: expensesData.fold(
+                              0.0,
+                              (sum, expense) =>
+                                  sum + (expense['Amount'] ?? 0.0)),
+                        )
+                      else
+                        const NoTripCard(),
                       const SizedBox(height: 20),
-                      Text('Recent Expenses',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text('Recent Expenses',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold)),
+                      ),
                       const SizedBox(height: 10),
                       Expanded(
-                        child: expenses.isEmpty
+                        child: expensesData.isEmpty
                             ? Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -159,17 +140,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               )
                             : ListView.separated(
                                 itemBuilder: (context, index) {
-                                  final expense = expenses[index];
+                                  final expense = expensesData[index];
                                   return ExpenseCard(
-                                      amount: expense['amount'],
-                                      category: expense['category'],
-                                      title: expense['title']);
+                                    amount:
+                                        expense['Amount']?.toDouble() ?? 0.0,
+                                    category: expense['Category'] ?? '',
+                                    title: expense['Title'] ?? '',
+                                  );
                                 },
                                 separatorBuilder: (context, index) => Divider(
                                   height: 1,
                                   color: Theme.of(context).colorScheme.surface,
                                 ),
-                                itemCount: expenses.length,
+                                itemCount: expensesData.length,
                               ),
                       ),
                     ],
@@ -179,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           );
         } else {
-          return const Center(child: Text('No user data available'));
+          return const Center(child: Text('No data available'));
         }
       },
     );

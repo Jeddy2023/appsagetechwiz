@@ -6,9 +6,11 @@ import 'package:appsagetechwiz/main_screen.dart';
 import 'package:appsagetechwiz/onboarding/screens/main.dart';
 import 'package:appsagetechwiz/profile/widgets/app_preferences.dart';
 import 'package:appsagetechwiz/profile/widgets/edit_profile.dart';
+import 'package:appsagetechwiz/reports/widgets/generatereport_screen.dart';
 import 'package:appsagetechwiz/theme/theme_constants.dart';
-import 'package:flutter/material.dart';
+import 'package:appsagetechwiz/trips/widgets/create_trip_form.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:appsagetechwiz/splashscreen/splash_screen.dart';
 import 'package:appsagetechwiz/animated-onboarding/animated_onboarding.dart';
@@ -36,6 +38,8 @@ void main() async {
         '/edit-profile': (context) => const EditProfile(),
         '/default-settings': (context) => const AppPreferencesScreen(),
         '/main': (context) => const MainScreen(),
+        '/add-trip': (context) => const CreateTripForm(),
         '/account-verification': (context) => const AccountVerification(),
+        '/generate-report': (context) => const GenerateReportScreen(),
       })));
 }

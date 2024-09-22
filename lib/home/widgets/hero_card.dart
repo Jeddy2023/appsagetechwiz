@@ -23,11 +23,6 @@ class HeroCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [colorScheme.primary, colorScheme.secondary],
-          // ),
           color: colorScheme.primary,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -53,7 +48,7 @@ class HeroCard extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 tripName,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),

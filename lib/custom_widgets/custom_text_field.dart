@@ -8,6 +8,7 @@ class CustomTextField extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
   final Widget? prefixIcon;
+  final bool disabled;
 
   const CustomTextField({
     super.key,
@@ -18,6 +19,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.prefixIcon,
+    this.disabled = false,
   });
 
   @override
@@ -52,30 +54,34 @@ class _CustomTextFieldState extends State<CustomTextField> {
           const SizedBox(height: 10),
           TextFormField(
             controller: widget.controller,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             cursorColor: Colors.grey.shade800,
             keyboardType: widget.keyboardType,
             onTapOutside: (e) {
               FocusScope.of(context).unfocus();
             },
             validator: widget.validator,
-            obscureText: widget.isPassword ? _obscureText : false,  // Only obscure text if it's a password field
+            obscureText: widget.isPassword ? _obscureText : false,
+            readOnly: widget.disabled,
             decoration: InputDecoration(
               prefixIcon: widget.prefixIcon,
               suffixIcon: widget.isPassword
                   ? IconButton(
-                onPressed: _toggleObscureText,
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,  // Toggle icons correctly
-                  color: Colors.grey,
-                ),
-              )
-                  : null,  // No visibility toggle for non-password fields
+                      onPressed: _toggleObscureText,
+                      icon: Icon(
+                        _obscureText
+                            ? Icons.visibility_off
+                            : Icons.visibility, // Toggle icons correctly
+                        color: Colors.grey,
+                      ),
+                    )
+                  : null, // No visibility toggle for non-password fields
               fillColor: Theme.of(context).inputDecorationTheme.fillColor,
               filled: true,
               hintText: widget.placeholder,
               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade800,
-              ),
+                    color: Colors.grey.shade800,
+                  ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
                 borderSide: BorderSide.none,
