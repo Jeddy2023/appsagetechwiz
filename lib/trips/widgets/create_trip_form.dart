@@ -90,19 +90,6 @@ class _CreateTripFormState extends State<CreateTripForm> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 32),
-              // ElevatedButton(
-              //   style: ElevatedButton.styleFrom(
-              //     foregroundColor: Colors.white,
-              //     backgroundColor: Theme.of(context).colorScheme.primary,
-              //     padding: const EdgeInsets.symmetric(vertical: 16),
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //   ),
-              //   onPressed: _submitForm,
-              //   child:
-              //       const Text('Create Trip', style: TextStyle(fontSize: 16)),
-              // ),
               CustomButton(
                 onPressed: _submitForm,
                 buttonText: 'Create Trip',
