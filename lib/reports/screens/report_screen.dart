@@ -24,44 +24,47 @@ class _ReportScreenState extends State<ReportScreen> {
         {
           "Trip_Name": "Grand Trip",
           "Destination": "Grand Canyon",
-          "Start_Date": DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000),
-          "End_Date": DateTime.fromMillisecondsSinceEpoch(1726959600 * 1000),
+          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
+          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726959600 * 1000)),
           "Budget": 60000.0,
           "Total_Expenses": 45000.0,
-          "Report_Creation_Date": DateTime.now(),
+          "Report_Creation_Date": formatDate(DateTime.now()),
         },
         {
           "Trip_Name": "Easter Cruise",
           "Destination": "Paris",
-          "Start_Date": DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000),
-          "End_Date": DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000),
+          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
+          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
           "Budget": 10000.0,
           "Total_Expenses": 8500.0,
-          "Report_Creation_Date":
-              DateTime.now().subtract(const Duration(days: 1)),
+          "Report_Creation_Date": formatDate(DateTime.now().subtract(const Duration(days: 1))),
         },
         {
           "Trip_Name": "Grand Trip",
           "Destination": "Grand Canyon",
-          "Start_Date": DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000),
-          "End_Date": DateTime.fromMillisecondsSinceEpoch(1726959600 * 1000),
+          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
+          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726959600 * 1000)),
           "Budget": 60000.0,
           "Total_Expenses": 45000.0,
-          "Report_Creation_Date": DateTime.now(),
+          "Report_Creation_Date": formatDate(DateTime.now()),
         },
         {
           "Trip_Name": "Easter Cruise",
           "Destination": "Paris",
-          "Start_Date": DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000),
-          "End_Date": DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000),
+          "Start_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
+          "End_Date": formatDate(DateTime.fromMillisecondsSinceEpoch(1726873200 * 1000)),
           "Budget": 10000.0,
           "Total_Expenses": 850000.0,
-          "Report_Creation_Date":
-          DateTime.now().subtract(const Duration(days: 1)),
+          "Report_Creation_Date": formatDate(DateTime.now().subtract(const Duration(days: 1))),
         },
       ];
       _isLoading = false;
     });
+  }
+
+  String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('MMMM d, y \'at\' hh:mm:ss a \'UTC+1\'');
+    return formatter.format(date.toUtc().add(const Duration(hours: 1)));
   }
 
   @override
