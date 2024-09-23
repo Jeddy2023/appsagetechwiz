@@ -100,12 +100,12 @@ class _GenerateReportScreenState extends ConsumerState<GenerateReportScreen> {
                         onTap: showTripOptions,
                         child: AbsorbPointer(
                           child: CustomTextField(
-                            label: "Preferred Currency",
-                            placeholder: "Enter preferred currency",
+                            label: "Selected Trip",
+                            placeholder: "Select Trip for report",
                             controller: tripController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your preferred currency';
+                                return 'Please select a trip';
                               }
                               return null;
                             },

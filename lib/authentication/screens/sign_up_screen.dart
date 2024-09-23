@@ -90,9 +90,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 const SizedBox(
                   height: 18,
                 ),
-                const SocialSignupCard(
-                    iconFilePath: "assets/images/auth/facebook.svg",
-                    textContent: "Continue with Facebook")
               ],
             ),
           ),
