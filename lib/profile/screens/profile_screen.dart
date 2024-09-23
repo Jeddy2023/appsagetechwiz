@@ -13,13 +13,27 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen>{
+class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindingObserver {
   late Future<Map<String, dynamic>?> _userDataFuture;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _fetchUserData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _fetchUserData();
+    }
   }
 
   void _fetchUserData() {
@@ -61,7 +75,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>{
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/edit-profile');
+              Navigator.pushNamed(context, '/edit-profile', arguments: _fetchUserData,);
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
@@ -112,12 +126,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>{
                           'icon': Icons.person_outline,
                           'title': '${userData['First_Name']} ${userData['Last_Name']}',
                           'subtitle': 'Personal Profile Info',
-                          'route': '/edit-profile',
+                          'onTap': () {
+                            Navigator.pushNamed(context, '/edit-profile', arguments: _fetchUserData);
+                          },
                         },
                         {
                           'icon': Icons.settings_outlined,
                           'title': 'Preference Settings',
-                          'route': '/default-settings',
+                          'onTap': () {
+                            Navigator.pushNamed(context, '/default-settings');
+                          },
                         },
                       ];
 
@@ -135,7 +153,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>{
                             icon: item['icon'],
                             title: item['title'],
                             subtitle: item['subtitle'] ?? '',
-                            route: item['route'],
+                            onTap: item['onTap'],
                           )),
                           const SizedBox(height: 20),
                           CustomButton(

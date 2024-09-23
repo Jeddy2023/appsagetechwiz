@@ -11,7 +11,8 @@ class GenerateReportScreen extends ConsumerStatefulWidget {
   const GenerateReportScreen({super.key});
 
   @override
-  ConsumerState<GenerateReportScreen> createState() => _GenerateReportScreenState();
+  ConsumerState<GenerateReportScreen> createState() =>
+      _GenerateReportScreenState();
 }
 
 class _GenerateReportScreenState extends ConsumerState<GenerateReportScreen> {
@@ -56,6 +57,8 @@ class _GenerateReportScreenState extends ConsumerState<GenerateReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fetchUserDataCallback = ModalRoute.of(context)!.settings.arguments as Function;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -113,36 +116,39 @@ class _GenerateReportScreenState extends ConsumerState<GenerateReportScreen> {
                       CustomButton(
                         onPressed: () async {
                           if (selectedTrip != null) {
-                            // Navigate to the ReportDetailscreen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ReportDetailscreen(
-                                  reportData: selectedTripDetails!,
-                                  backAction: _fetchReports,
-                                ),
-                              ),
-                            );
-
                             // Show a loading toast or overlay
-                            ToasterUtils.showCustomSnackBar(context, 'Generating report...', isError: false);
+                            ToasterUtils.showCustomSnackBar(
+                                context, 'Generating report...',
+                                isError: false);
 
                             try {
                               // Attempt to generate the report
-                              String? result = await _authService.generateReport(selectedTripId!);
+                              String? result = await _authService
+                                  .generateReport(selectedTripId!);
 
                               // Check for success or error
                               if (result == null) {
-                                ToasterUtils.showCustomSnackBar(context, 'Report generated successfully', isError: false);
+                                ToasterUtils.showCustomSnackBar(
+                                    context, 'Report generated successfully',
+                                    isError: false);
                               } else {
-                                ToasterUtils.showCustomSnackBar(context, result, isError: false);
+                                ToasterUtils.showCustomSnackBar(context, result,
+                                    isError: false);
                               }
+
+                              fetchUserDataCallback();
+
+                              Navigator.pop(context, true);
                             } catch (e) {
                               // Handle any unexpected errors
-                              ToasterUtils.showCustomSnackBar(context, 'Failed to generate report: $e', isError: true);
+                              ToasterUtils.showCustomSnackBar(
+                                  context, 'Failed to generate report: $e',
+                                  isError: true);
                             }
                           } else {
-                            ToasterUtils.showCustomSnackBar(context, 'Please select a trip', isError: true);
+                            ToasterUtils.showCustomSnackBar(
+                                context, 'Please select a trip',
+                                isError: true);
                           }
                         },
                         buttonText: "Generate Report",
@@ -180,7 +186,8 @@ class _GenerateReportScreenState extends ConsumerState<GenerateReportScreen> {
                           title: Text(trip['Trip_Name'] ?? 'Unnamed Trip'),
                           onTap: () {
                             setState(() {
-                              selectedTrip = trip['Trip_Name'] ?? 'Unnamed Trip';
+                              selectedTrip =
+                                  trip['Trip_Name'] ?? 'Unnamed Trip';
                               selectedTripId = trip['Trip_Id'] ?? trip['id'];
                               selectedTripDetails = trip;
                               tripController.text = selectedTrip!;
