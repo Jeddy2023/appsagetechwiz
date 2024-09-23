@@ -584,16 +584,17 @@ class AuthService {
   // Method to generate a report for a specific trip
   Future<String?> generateReport(String tripId) async {
     try {
-      print('The trip id we are monitoring $tripId');
+      User? currentUser = _auth.currentUser;
+      if (currentUser == null) return 'Error Generating Report Could not get user';
+
       DocumentSnapshot tripDoc =
           await _firestore.collection('Trips').doc(tripId).get();
-
-      print('${tripDoc.data()}');
 
       Map<String, dynamic> tripData = tripDoc.data() as Map<String, dynamic>;
 
       // Create the report data
       Map<String, dynamic> reportData = {
+        'User_Id': currentUser.uid,
         'Trip_Name': tripData['Trip_Name'],
         'Destination': tripData['Destination'],
         'Start_Date': tripData['Start_Date'],
@@ -615,8 +616,15 @@ class AuthService {
   // Method to fetch all reports
   Future<List<Map<String, dynamic>>> fetchAllReports() async {
     try {
-      QuerySnapshot reportsSnapshot =
-          await _firestore.collection('Reports').get();
+      User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        return [];
+      }
+
+      QuerySnapshot reportsSnapshot = await _firestore
+          .collection('Reports')
+          .where('User_Id', isEqualTo: currentUser.uid)
+          .get();
 
       // Map the documents to a list of maps
       return reportsSnapshot.docs.map((doc) {
