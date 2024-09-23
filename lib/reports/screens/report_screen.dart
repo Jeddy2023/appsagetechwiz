@@ -53,7 +53,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/generate-report');
+              Navigator.pushNamed(context, '/generate-report', arguments: _fetchReports);
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),

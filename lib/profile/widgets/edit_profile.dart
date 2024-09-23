@@ -117,6 +117,8 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final fetchUserDataCallback = ModalRoute.of(context)!.settings.arguments as Function;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -128,6 +130,13 @@ class _EditProfileState extends ConsumerState<EditProfile> {
           ),
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            fetchUserDataCallback(); // Call the fetchUserDataCallback
+            Navigator.pop(context); // Navigate back
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
